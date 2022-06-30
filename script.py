@@ -9,10 +9,8 @@ def save_as_png(canvas, fileName):
     img = Image.open(fileName + '.eps') 
     img.save(fileName + '.png', 'png')
 
-def create_diagram(canvas, width, height, width_buffer, height_buffer):
-    triangle_height = height - height_buffer * 2
-    triangle_base = width - width_buffer * 2
-
+def create_diagram_w_lines(canvas, width, height, width_buffer, height_buffer):
+    # big triangle sides
     left_major = canvas.create_line(width/2, height_buffer,
                                     width_buffer, height - height_buffer)
     right_major = canvas.create_line(width/2, height_buffer,
@@ -20,7 +18,7 @@ def create_diagram(canvas, width, height, width_buffer, height_buffer):
     bottom_major = canvas.create_line(width_buffer, height - height_buffer,
                                     width - width_buffer, height - height_buffer)
     
-    # horizontals
+    # horizontal cuts
     canvas.create_line(width_buffer + 1/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
                         width_buffer + 5/6 * triangle_base, height - height_buffer - 1/3 * triangle_height)
     canvas.create_line(width_buffer + 2/6 * triangle_base, height - height_buffer - 2/3 * triangle_height,
@@ -41,9 +39,90 @@ def create_diagram(canvas, width, height, width_buffer, height_buffer):
                         width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height)
     canvas.create_line(width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
                         width_buffer + 4/6 * triangle_base, height - height_buffer - 2/3 * triangle_height)
+
+def create_diagram(canvas, width, height, width_buffer, height_buffer):
+    triangle_height = height - height_buffer * 2
+    triangle_base = width - width_buffer * 2
+    outline_color = "black"
+
+    # top row =============================================================================
+    canvas.create_polygon([
+        width_buffer + 3/6 * triangle_base, height - height_buffer - 3/3 * triangle_height,
+        width_buffer + 2/6 * triangle_base, height - height_buffer - 2/3 * triangle_height,
+        width_buffer + 4/6 * triangle_base, height - height_buffer - 2/3 * triangle_height,
+    ],
+    fill="grey",
+    outline=outline_color,
+    )
+
+    # middle row =============================================================================
+    canvas.create_polygon([
+        width_buffer + 2/6 * triangle_base, height - height_buffer - 2/3 * triangle_height,
+        width_buffer + 1/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+        width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+    ],
+    fill="grey",
+    outline=outline_color,
+    )
+    canvas.create_polygon([
+        width_buffer + 2/6 * triangle_base, height - height_buffer - 2/3 * triangle_height,
+        width_buffer + 4/6 * triangle_base, height - height_buffer - 2/3 * triangle_height,
+        width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+    ],
+    fill="grey",
+    outline=outline_color,
+    )
+    canvas.create_polygon([
+        width_buffer + 4/6 * triangle_base, height - height_buffer - 2/3 * triangle_height,
+        width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+        width_buffer + 5/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+    ],
+    fill="grey",
+    outline=outline_color,
+    )
+
+    # bottom row =============================================================================
+    canvas.create_polygon([
+        width_buffer + 1/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+        width_buffer + 0/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
+        width_buffer + 2/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
+    ],
+    fill="grey",
+    outline=outline_color,
+    )
+    canvas.create_polygon([
+        width_buffer + 1/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+        width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+        width_buffer + 2/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
+    ],
+    fill="grey",
+    outline=outline_color,
+    )
+    canvas.create_polygon([
+        width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+        width_buffer + 2/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
+        width_buffer + 4/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
+    ],
+    fill="grey",
+    outline=outline_color,
+    )
+    canvas.create_polygon([
+        width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+        width_buffer + 5/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+        width_buffer + 4/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
+    ],
+    fill="grey",
+    outline=outline_color,
+    )
+    canvas.create_polygon([
+        width_buffer + 5/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
+        width_buffer + 4/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
+        width_buffer + 6/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
+    ],
+    fill="grey",
+    outline=outline_color,
+    )
     
-
-
     canvas.pack()
     canvas.update()
 
