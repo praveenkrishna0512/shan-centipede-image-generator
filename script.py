@@ -5,13 +5,15 @@ from PIL import Image, EpsImagePlugin
 EpsImagePlugin.gs_windows_binary =  r'C:\Program Files\gs\gs9.56.1\bin\gswin64c.exe'
 
 random.seed()
-root = Tk()
+database_file_string = "./encoding_database.json"
 
+root = Tk()
 width = 500
 height = 500
 height_buffer = height/5
 width_buffer = width/5
 canvas = Canvas(root, width=width, height=height)
+num_shape_slices = 9
 
 # Colors are labelled by their starting letters
 color_map = {
@@ -43,53 +45,22 @@ def write_json(new_data, filename):
 
 def save_as_png(canvas, fileName):
     # Opening JSON file
-    f = open("./encoding_database.json")
+    f = open(database_file_string)
     encoding_database = json.load(f)
     database_length = len(encoding_database["encodings"])
-    # Writing to JSON file
-    file_keyvalue = {str(database_length + 1) : fileName} 
-    write_json(file_keyvalue, "./encoding_database.json")
+    id = database_length + 1
+    file_keyvalue = {str(id) : fileName} 
+    write_json(file_keyvalue, database_file_string)
 
     # save postscipt image 
-    canvas.postscript(file = './eps/' + fileName + '.eps') 
+    canvas.postscript(file = './eps/' + str(id) + '.eps') 
     # use PIL to convert to PNG 
-    img = Image.open('./eps/' + fileName + '.eps') 
-    img.save('./png/' + fileName + '.png', 'png')
-
-def create_diagram_w_lines(canvas, width, height, width_buffer, height_buffer):
-    # big triangle sides
-    left_major = canvas.create_line(width/2, height_buffer,
-                                    width_buffer, height - height_buffer)
-    right_major = canvas.create_line(width/2, height_buffer,
-                                    width - width_buffer, height - height_buffer)
-    bottom_major = canvas.create_line(width_buffer, height - height_buffer,
-                                    width - width_buffer, height - height_buffer)
-    
-    # horizontal cuts
-    canvas.create_line(width_buffer + 1/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
-                        width_buffer + 5/6 * triangle_base, height - height_buffer - 1/3 * triangle_height)
-    canvas.create_line(width_buffer + 2/6 * triangle_base, height - height_buffer - 2/3 * triangle_height,
-                        width_buffer + 4/6 * triangle_base, height - height_buffer - 2/3 * triangle_height)
-
-    # bottom row slants
-    canvas.create_line(width_buffer + 1/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
-                        width_buffer + 2/6 * triangle_base, height - height_buffer - 0/3 * triangle_height)
-    canvas.create_line(width_buffer + 2/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
-                        width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height)
-    canvas.create_line(width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
-                        width_buffer + 4/6 * triangle_base, height - height_buffer - 0/3 * triangle_height)
-    canvas.create_line(width_buffer + 4/6 * triangle_base, height - height_buffer - 0/3 * triangle_height,
-                        width_buffer + 5/6 * triangle_base, height - height_buffer - 1/3 * triangle_height)
-
-    # middle row slants
-    canvas.create_line(width_buffer + 2/6 * triangle_base, height - height_buffer - 2/3 * triangle_height,
-                        width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height)
-    canvas.create_line(width_buffer + 3/6 * triangle_base, height - height_buffer - 1/3 * triangle_height,
-                        width_buffer + 4/6 * triangle_base, height - height_buffer - 2/3 * triangle_height)
+    img = Image.open('./eps/' + str(id) + '.eps') 
+    img.save('./png/' + str(id) + '.png', 'png')
 
 def process_color_encoding_string(color_encoding):
     result = ""
-    for i in range(1, 10):
+    for i in range(1, num_shape_slices + 1):
         num_index_in_code = color_encoding.find(str(i))
         if num_index_in_code == -1:
             result += str(i) + "W"
@@ -107,19 +78,22 @@ def generate_color_palette(color_encoding):
     # ONLY IF they are not WHITE
     # Thus, this method will process the input strings to convert them into
     color_encoding = process_color_encoding_string(color_encoding)
-    print("Final fullstring encoding: " + color_encoding)
+    # print("Final fullstring encoding: " + color_encoding)
 
     result = []
-    for i in range(9):
+    for i in range(num_shape_slices):
         result.append(color_map[color_encoding[i * 2 + 1 : i * 2 + 2]])
     return result
 
-def create_diagram(canvas, width, height, width_buffer, height_buffer, color_encoding):
+def create_diagram(id, canvas, width, height, width_buffer, height_buffer, color_encoding):
     triangle_height = height - height_buffer * 2
     triangle_base = width - width_buffer * 2
     outline_color = "black"
     color_palette = generate_color_palette(color_encoding)
-    print("Color Palette: " + str(color_palette))
+    # print("Color Palette: " + str(color_palette))
+
+    # id number
+    canvas.create_text(50, 50, text=str(id), font="Calibri 48 bold")
 
     # top row =============================================================================
     canvas.create_polygon([
@@ -204,31 +178,41 @@ def create_diagram(canvas, width, height, width_buffer, height_buffer, color_enc
 
 def generate_unique_code():
     code = ""
-    num_set = {random.randint(1,9)}
+    desired_code_length = 6
+    num_set = {random.randint(1, num_shape_slices)}
     while len(num_set) < 3:
-        num_set.add(random.randint(1,9))
+        num_set.add(random.randint(1, num_shape_slices))
     num_list = sorted(num_set)
-    print("Num set: " + str(num_set))
-    print("Num list: " + str(num_list))
+    # print("Num set: " + str(num_set))
+    # print("Num list: " + str(num_list))
 
-    for i in range(6):
+    for i in range(desired_code_length):
         if i % 2 == 0:
             code += str(num_list[int(i / 2)])
         else:
             arr_len = len(color_code_array)
             code += color_code_array[random.randint(0, arr_len - 1)]
 
-    # TODO: Check if code exists alrdy!
+    # Check if code exists alrdy!
+    f = open(database_file_string)
+    encoding_database = json.load(f)
+    for prev_code in encoding_database.values():
+        if prev_code == code:
+            print(code)
+            code = generate_unique_code()
+            return code
+
     return code
 
 def generate_diagrams(n):
     for i in range(n):
         color_encoding = generate_unique_code()
-        print("Final generated color_encoding: " + color_encoding)
-        create_diagram(canvas=canvas, width=width, height=height,
+        # print("Final generated color_encoding: " + color_encoding)
+        create_diagram(id=i, canvas=canvas, width=width, height=height,
         width_buffer=width_buffer, height_buffer=height_buffer,
         color_encoding=color_encoding)
         save_as_png(canvas, color_encoding)
+        canvas.delete("all")
 
 generate_diagrams(100)
 
