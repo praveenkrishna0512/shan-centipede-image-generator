@@ -4,10 +4,10 @@ EpsImagePlugin.gs_windows_binary =  r'C:\Program Files\gs\gs9.56.1\bin\gswin64c.
 
 def save_as_png(canvas, fileName):
     # save postscipt image 
-    canvas.postscript(file = fileName + '.eps') 
+    canvas.postscript(file = './eps/' + fileName + '.eps') 
     # use PIL to convert to PNG 
-    img = Image.open(fileName + '.eps') 
-    img.save(fileName + '.png', 'png')
+    img = Image.open('./eps/' + fileName + '.eps') 
+    img.save('./png/' + fileName + '.png', 'png')
 
 def create_diagram_w_lines(canvas, width, height, width_buffer, height_buffer):
     # big triangle sides
@@ -46,12 +46,14 @@ def generate_color_palette(color_encoding):
         for i in range(9):
             result.append("white")
         return result
+    
+    # for letter in color_encoding:
+
 
 def create_diagram(canvas, width, height, width_buffer, height_buffer, color_encoding):
     triangle_height = height - height_buffer * 2
     triangle_base = width - width_buffer * 2
     outline_color = "black"
-    
     color_palette = generate_color_palette(color_encoding)
 
     # top row =============================================================================
