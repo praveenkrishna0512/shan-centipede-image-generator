@@ -206,6 +206,8 @@ def generate_unique_code():
 
 def generate_diagrams(n):
     for i in range(n):
+        # If you wish to load your own color_encoding, load a JSON file containing the key-value pairs
+        # of id and colour_encoding, and assign the colour_encoding to generate_unique_code
         color_encoding = generate_unique_code()
         # print("Final generated color_encoding: " + color_encoding)
         create_diagram(id=i, canvas=canvas, width=width, height=height,
